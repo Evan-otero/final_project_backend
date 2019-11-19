@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
-from models import db, Users, Locations
+from models import db, User, Location
 from flask_jwt_simple import (
     JWTManager, jwt_required, create_jwt, get_jwt_identity
 )
@@ -45,9 +45,9 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-@app.route('/users', methods=['GET'])
+@app.route('/user', methods=['GET'])
 def handle_users():
-    all_people = Users.query.all()
+    all_people = User.query.all()
     all_people = list(map(lambda x: x.serialize(), all_people))
     return jsonify(all_people), 200
 
@@ -55,7 +55,7 @@ def handle_users():
 def handle_user():
     try:
         body = request.get_json()
-        user1 = Users(username=body['username'], email=body['email'], password=body['password'],name=body['name'],)
+        user1 = User(username=body['username'], email=body['email'], password=body['password'],name=body['name'],)
         db.session.add(user1)
         db.session.commit()
         
@@ -78,7 +78,7 @@ def login():
         if not password:
             return jsonify({"msg": "Missing password parameter"}), 400
         
-        usercheck = Users.query.filter_by(username=username, password=password).first()
+        usercheck = User.query.filter_by(username=username, password=password).first()
         if usercheck == None:
             return jsonify({"msg": "Bad username or password"}), 401
         ret = {'jwt': create_jwt(identity=username), "id": usercheck.id, "email": usercheck.email}
@@ -87,6 +87,38 @@ def login():
         return jsonify({ "error": str(e.__dict__['orig'])}), 409
     
     return jsonify({"message": "success"}),200
+
+@app.route('/location', methods=['GET'])
+def handle_locations():
+    all_places = Location.query.all()
+    all_places = list(map(lambda x: x.serialize(), all_places))
+    return jsonify(all_places), 200
+
+@app.route('/addlocation', methods=['POST'])
+def handle_location():
+    try:
+        body = request.get_json()
+        user1 = Location(id=body['id'], title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
+        db.session.add(user1)
+        db.session.commit()
+        
+    except SQLAlchemyError as e:
+        return jsonify({ "error": str(e.__dict__['orig'])}), 409
+    return jsonify({"message":"success"})
+
+@app.route('/location/<id>', methods=['PUT'])
+def editlocation(id):
+    try:
+        body = request.get_json()
+        place = place.query.get(id)
+        user1 = Location(id=body['id'], title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
+        
+        db.session(user1)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        return jsonify({ "error": str(e.__dict__['orig'])}), 409
+    return jsonify({"message":"success"})
+
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
