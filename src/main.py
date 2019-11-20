@@ -98,7 +98,7 @@ def handle_locations():
 def handle_location():
     try:
         body = request.get_json()
-        user1 = Location(id=body['id'], title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
+        user1 = Location(id=id, title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
         db.session.add(user1)
         db.session.commit()
         
@@ -108,15 +108,14 @@ def handle_location():
 
 @app.route('/location/<id>', methods=['PUT'])
 def editlocation(id):
-    try:
-        body = request.get_json()
-        place = place.query.get(id)
-        user1 = Location(id=body['id'], title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
-        
-        db.session(user1)
-        db.session.commit()
-    except SQLAlchemyError as e:
-        return jsonify({ "error": str(e.__dict__['orig'])}), 409
+    
+    body = request.get_json()
+    place = Location.query.get(id)
+    user1 = Location(id=id, title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
+    
+    db.session(user1)
+    db.session.commit()
+    
     return jsonify({"message":"success"})
 
 @app.errorhandler(APIException)

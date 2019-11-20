@@ -40,7 +40,7 @@ class Location(db.Model):
 
      
 
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
      def serialize(self):
          return{
