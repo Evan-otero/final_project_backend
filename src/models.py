@@ -29,27 +29,24 @@ class Location(db.Model):
      lat = db.Column(db.String(20),unique= False, nullable=False)
      log= db.Column(db.String(20),unique= False, nullable=False)
      ratings= db.Column(db.String(20),unique=False, nullable=True)
-     fenced= db.Column(db.Boolean(5), unique=False, nullable=False)
+     fenced= db.Column(db.Boolean(5), unique=False, nullable=True)
      locationtype= db.Column(db.String(12), unique=False, nullable=False)
      bathrooms= db.Column(db.Boolean(5), unique=False, nullable=True)
      wateravailable =db.Column(db.Boolean(5), unique=False, nullable=True)
      smalldogarea =db.Column(db.Boolean(5), unique=False, nullable=True)
      allowedoutside = db.Column(db.Boolean(5), unique=False, nullable=True)
      allowedinside = db.Column(db.Boolean(5), unique=False, nullable=True)
-     mealsavailable = db.Column(db.Boolean(5), unique=False, nullable=True)
+     mealsavailable = db.Column(db.Boolean(5), unique=False, nullable=True)   
 
-     
-
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
      def serialize(self):
          return{
              "id": self.id,
              "title": self.title,
              "address": self.address,
-             "lat": self.lat,
-             "log": self.log,
-             "ratings": self.ratings,
+             "lat":self.lat,
+             "log":self.log,
              "fenced": self.fenced,
              "user_id": self.user_id,
              "bathrooms":self.bathrooms,
@@ -57,6 +54,8 @@ class Location(db.Model):
              "smalldogarea": self.smalldogarea,
              "allowedoutside": self.allowedoutside,
              "allowedinside:": self.allowedinside,
-             "mealsavailable": self.mealsavailable
+             "mealsavailable": self.mealsavailable,
+             "locationtype": self.locationtype
+             
          }
 

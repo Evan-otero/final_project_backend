@@ -81,7 +81,7 @@ def login():
         usercheck = User.query.filter_by(username=username, password=password).first()
         if usercheck == None:
             return jsonify({"msg": "Bad username or password"}), 401
-        ret = {'jwt': create_jwt(identity=username), "id": usercheck.id, "email": usercheck.email}
+        ret = {'jwt': create_jwt(identity=username), "id": usercheck.id, "email": usercheck.email,"name": usercheck.name}
         return jsonify(ret), 200
     except SQLAlchemyError as e:
         return jsonify({ "error": str(e.__dict__['orig'])}), 409
@@ -94,26 +94,29 @@ def handle_locations():
     all_places = list(map(lambda x: x.serialize(), all_places))
     return jsonify(all_places), 200
 
-@app.route('/addlocation', methods=['POST'])
+@app.route('/location', methods=['POST'])
 def handle_location():
     try:
         body = request.get_json()
-        user1 = Location(id=id, title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
-        db.session.add(user1)
+        loc = Location(title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],locationtype=body['locationtype'],mealsavailable=body['mealsavailable'])
+        db.session.add(loc)
         db.session.commit()
         
     except SQLAlchemyError as e:
         return jsonify({ "error": str(e.__dict__['orig'])}), 409
     return jsonify({"message":"success"})
 
-@app.route('/location/<id>', methods=['PUT'])
+@app.route('/location/<int:id>', methods=['PUT'])
 def editlocation(id):
     
     body = request.get_json()
     place = Location.query.get(id)
-    user1 = Location(id=id, title=body['title'], address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'])
     
-    db.session(user1)
+    place.locationtype=body['locationtype']
+    
+    # address=body['address'],lat=body['lat'],log=body['log'],ratings=body['ratings'],fenced=body['fenced'],user_id=body['user_id'],bathrooms=body['bathrooms'],wateravailable=body['wateravailable'],smalldogarea=body['smalldogarea'],allowedinside=body['allowedinside'],allowedoutside=body['allowedoutside'],mealsavailable=body['mealsavailable'
+
+    # db.session()
     db.session.commit()
     
     return jsonify({"message":"success"})
